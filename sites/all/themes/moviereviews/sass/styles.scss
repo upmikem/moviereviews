@@ -1,0 +1,193 @@
+/**
+ * @file
+ * Styles are organized using the SMACSS technique. @see http://smacss.com/book/
+ *
+ * When you turn on CSS aggregation at admin/config/development/performance, all
+ * of these @include files will be combined into a single file.
+ */
+
+/* Import Sass mixins, variables, Compass modules, etc. */
+@import "init";
+
+/* HTML element (SMACSS base) rules */
+@import "normalize";
+
+/* Layout rules */
+@import "layouts/responsive";
+
+/* Component (SMACSS module) rules */
+@import "components/misc";
+// Optionally, add your own components here.
+@import "print";
+
+/* SMACSS theme rules */
+/* @import "theme-A"; */
+/* @import "theme-B"; */
+
+
+//Header
+#header{
+  padding-top: 20px;
+  .header__region{
+    clear: none;
+  }
+  #block-menu-menu-header-menu{
+      display: block;
+      float: left;
+    }
+  #logo{
+    display: block;
+    float: left;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  #block-search-form{
+    display: block;
+    float: right;
+    margin-top: 20px;
+  }
+  ul{
+    float: left;
+    li{
+      display: block;
+      float: left;
+      list-style: none;
+      padding: 0 15px;
+      a{
+        font-size: 1.1em;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.front{
+  //Recent lists box
+  .view-top-films-list{
+    .views-field-title{
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+  }
+//News box
+  .quicktabs-wrapper{
+    ul.quicktabs-tabs {
+      border-bottom: 1px solid #ccc;
+      li {
+        border-left: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        padding: 3px;
+        background-color: #D8D8D8;
+      }
+      li.active {
+        font-weight: bold;
+      }
+    }
+  }
+// Hide the views body
+  .views-field.views-field-body{
+    display: none;
+  }
+  .top-ten-tooltip{
+    position: absolute;
+    width: 250px;
+    padding: 10px 25px;
+    background-color: #D8D8D8;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    color: black;
+    z-index: 10;
+  }
+  //Latest Reviews box
+  .pane-reviews{
+    .views-field-field-movie-review-poster{
+      float: left;
+      img{margin: 10px 20px 0 0}
+    }
+    .views-field-body{
+      min-height: 110px;
+    }
+    .views-field-field-movie-review-link,
+    .views-field-field-movie-review-cinemas,
+    .views-field-field-movie-review-buy-on-dvd,
+    .views-field-field-movie-review-netflix{
+      display: none;
+    }
+  }
+  //close front
+}
+
+//Front page pannels
+.panel-pane, .block-user, #block-views-recommended-films-block {
+  border: 1px solid #CCC;
+  background-color: #ECECEC;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+}
+
+
+//Reviews Genre pages
+.page-reviews{
+  .field-type-image {
+    display: block;
+    float: left;
+    img{margin-right: 20px;}
+  }
+  article{
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .required-fields{display: none;}
+}
+
+
+//Individual Review Pages
+.node-type-movie-review{
+  .review-page-header{
+    border: 1px solid #CCC;
+    background-color: #ECECEC;
+    border-radius: 10px;
+    padding: 10px 10px 50px 10px;
+    margin: 10px;
+    .movie-links {
+      .field {
+        float: left;
+        padding-right: 15px;
+      }
+    }
+  }
+  img{margin-top: 20px;}
+  h3{
+    font-size: 1.5em;
+    color: blue;
+  }
+  .genre-taxonomy-list{
+    list-style: none;
+    font-weight: 700;
+    padding-left: 0;
+  }
+}
+
+//Footer
+#footer{
+  padding-bottom: 50px;
+  background: #000;
+  color: #fff;
+  li{
+    display: block;
+    float: left;
+    list-style: none;
+    padding: 0 15px;
+  }
+  a{
+    font-size: 1.1em;
+    color: #fff;
+  }
+}
+
+

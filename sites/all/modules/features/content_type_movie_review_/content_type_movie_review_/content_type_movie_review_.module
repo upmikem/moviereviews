@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Content Type Movie Review  feature.
+ */
+
+include_once 'content_type_movie_review_.features.inc';

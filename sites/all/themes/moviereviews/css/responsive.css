@@ -1,0 +1,24 @@
+@media (max-width: 500px) {
+  /* line 5, ../sass/responsive.scss */
+  .panel-2col .panel-panel {
+    clear: both;
+    width: 100%;
+  }
+}
+@media (min-width: 960px) {
+  /* line 13, ../sass/responsive.scss */
+  .sidebar-first .region-sidebar-first {
+    float: left;
+    width: 20%;
+    margin-left: 0%;
+    margin-right: -20%;
+  }
+
+  /* line 19, ../sass/responsive.scss */
+  .sidebar-first #content {
+    float: left;
+    width: 80%;
+    margin-left: 20%;
+    margin-right: -100%;
+  }
+}

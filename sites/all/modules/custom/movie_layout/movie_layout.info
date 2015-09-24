@@ -1,0 +1,4 @@
+name = Movie Layout
+description = Alters the layout of a node page for a Movie Review
+core = 7.x
+package = "Top Ten Movies"

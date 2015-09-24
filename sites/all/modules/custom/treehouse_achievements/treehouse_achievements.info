@@ -1,0 +1,6 @@
+; $Id$
+name = Treehouse Achievements Module
+description = "Pulls in Treehouse Points and Achievement for individual profiles for displaying"
+core = 7.x
+;files[] = treehouse_achievements.module
+;dependencies[] = block

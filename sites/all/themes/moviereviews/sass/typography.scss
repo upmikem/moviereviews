@@ -1,0 +1,31 @@
+//from google fonts
+
+@import url(https://fonts.googleapis.com/css?family=Slabo+27px|Roboto+Condensed:400,400italic,300italic,300);
+
+// Font variables
+$open-sans: 'Open Sans', sans-serif;
+$default-font-colour: #333;
+
+//Global Styles
+body{
+  font-family: $open-sans;
+  font-weight: normal;
+  font-size: 0.85em;
+  color: $default-font-colour;
+}
+
+// Links
+a{
+  color: $default-font-colour;
+  text-decoration: none;
+  &:hover{
+    text-decoration: underline;
+  }
+}
+
+//Headings
+
+h1, h2{
+  font-size: 1.5em;
+}
+

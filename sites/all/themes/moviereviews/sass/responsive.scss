@@ -1,0 +1,25 @@
+// Media Queries
+
+// Font page layout
+@media (max-width: 500px){
+  .panel-2col .panel-panel{
+    clear: both;
+    width: 100%;
+  }
+}
+
+// Page fix
+@media (min-width: 960px) {
+  .sidebar-first .region-sidebar-first {
+    float: left;
+    width: 20%;
+    margin-left: 0%;
+    margin-right: -20%;
+  }
+  .sidebar-first #content {
+    float: left;
+    width: 80%;
+    margin-left: 20%;
+    margin-right: -100%;
+  }
+}

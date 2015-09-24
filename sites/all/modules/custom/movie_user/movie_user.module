@@ -1,0 +1,286 @@
+<?php
+/*
+ *
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function movie_user_form_alter(&$form, &$form_state, $form_id) {
+
+  //dsm($form);
+
+  if ($form_id == 'user_profile_form') {
+    $genre_volcab = taxonomy_vocabulary_machine_name_load('genre');
+    //dpm($genre_volcab);
+
+    $results = array();
+    $results = movie_user_get_user_details($form['#user']->uid);
+    //dpm($results);
+    $film_details = movie_user_film_details($results['film_nid']);
+
+    //dpm($film_details);
+
+    $terms = taxonomy_get_tree($genre_volcab->vid);
+    //dpm($terms);
+    $new_terms = array();
+
+    foreach ($terms as $term) {
+      $new_terms[$term->tid] = $term->name;
+    }
+
+    //dpm($new_terms);
+
+    $form['account']['user_details'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('All About You'),
+        '#description' => t("Provide details about yourself."),
+        '#collapsible' => TRUE,
+    );
+    $form['account']['user_details']['favorite_film'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Your favorite film'),
+        '#description' => t("Search for your favorite film."),
+        '#autocomplete_path' => 'moviedashboard/search',
+        '#default_value' => !empty($film_details) ? $film_details['title'] : '',
+    );
+     $form['account']['user_details']['favorite_genres'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Your favorite film genres'),
+        //'#return_value' => 1,
+        //'#default_value' => 0,
+        '#options' => $new_terms,
+        '#description' => t("Search for your favorite film genres."),
+        '#default_value' => !empty($results['genres_tid']) ? unserialize($results['genres_tid']) : array(),
+     );
+    return $form;
+  }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function movie_user_menu() {
+  $items['moviedashboard/search'] = array(
+      'title' => 'Import Movie',
+      'page callback' => 'movie_user_search',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    );
+  $items['user/%/moviepreferences'] = array(
+      'title' => 'Movie Preferences', //tab title
+      'page callback' => 'movie_user_preferences', //function
+      'access arguments' => array('access content'), //anyone can access
+      'type' => MENU_LOCAL_TASK, //creates a tab
+      'file' => 'movie_user_profile.pages.inc', //file where the function is stored
+      'page arguments' => array(1), //function param
+  );
+
+  $items['suggestmovies/%'] = array(
+      'title' => 'Import Movie',
+      'page callback' => 'movie_user_ajax_suggest_movies',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'page arguments' => array(1), //function param
+  );
+
+    return $items;
+}
+
+
+/*
+ *
+ */
+function movie_user_search($title) {
+
+  $result = db_query(
+    'SELECT nid, title FROM {node} WHERE title LIKE :pattern and type=:type',
+  array(
+     ':pattern' => '%' . db_like($title) . '%',
+     ':type' => 'movie_review',
+    )
+  )->fetchAll();
+
+  $movie_results = array();
+
+  foreach ($result as $key => $title) {
+    $movie_results[$title->title] = $title->title;
+    //dsm($movie_results);
+  }
+  return drupal_json_output($movie_results);
+}
+
+
+/**
+ * Implements hook_user_update().
+ */
+// Updates the form on submitting
+function movie_user_user_update(&$edit, $account, $category) {
+  //dsm($account->favorite_genres);
+
+  $fav_movie = $account->favorite_film;
+  $fav_movie_id = movie_import_check_movie_exists($fav_movie);
+
+  //dsm($fav_movie_id);
+
+  if (empty($fav_movie_id)) {
+    drupal_set_message(t('Sorry this movie does not exist.'), 'error');
+  }
+    else{
+      //dsm($fav_movie_id);
+      db_merge('movie_user')
+          ->key(array('uid' => $account->uid))
+          ->fields(array(
+              'uid' => $account->uid,
+              'genres_tid' => serialize($account->favorite_genres),
+              'film_nid' => $fav_movie_id,
+          ))
+          ->execute();
+    }
+}
+
+/*
+ *
+ */
+function movie_user_get_user_details($user_id) {
+
+  //dpm($user_id);
+
+  return $result = db_select('movie_user', 'm')
+      ->fields('m')
+      ->condition('uid', $user_id, '=')
+      ->execute()
+      ->fetchAssoc();
+     //dpm($result);
+}
+
+/*
+ *
+ */
+function movie_user_film_details($nid) {
+
+  return $result = db_select('node', 'n')
+      ->fields('n')
+      ->condition('nid', $nid, '=')
+      ->execute()
+      ->fetchAssoc();
+
+   // dpm($result);
+
+}
+
+/**
+ * Implements hook_theme().
+ */
+function movie_user_theme() {
+  return array(
+      'user_preference_title' => array(
+          'variables' => array(
+              'username' => NULL,
+          ),
+      ),
+      'fav_film_teaser' => array(
+          'variables' => array(
+              'image' => NULL,
+              'title' => NULL,
+              'plot' => NULL,
+          ),
+          'template' =>'fav_film_teaser',
+          'path' => drupal_get_path('module', 'movie_user') . '/templates',
+      ),
+  );
+}
+
+/*
+ * A themeing function to display username
+ */
+function theme_user_preference_title($variables) {
+  return "<h2>" . check_plain($variables['username']) . "'s favorite film</h2>";
+}
+
+function movie_user_ajax_suggest_movies($uid) {
+  print movie_user_get_preferences($uid);
+}
+
+/*
+ *
+ */
+function movie_user_get_preferences($uid) {
+
+  $user_genres = movie_user_get_user_details($uid);
+
+  $user_genres = unserialize($user_genres['genres_tid']);
+  $user_tids = array();
+
+  if (is_array($user_genres)) {
+    foreach ($user_genres as $key => $value) {
+      if ($key == $value) {
+        //dpm($value);
+        $user_tids[] = $value;
+      }
+    }
+  }
+
+  if (!empty($user_tids)) {
+    $view = views_embed_view('suggestions', 'block', implode('+', $user_tids));
+    //dpm($view);
+    return $view;
+  }
+}
+
+/*
+ * Implents hook_block_info
+ *
+ * register the block in Drupal
+ */
+function movie_user_block_info() {
+  // This example comes from node.module.
+  $blocks['your_favourites'] = array(
+      'info' => t('Your Favourites'),
+    );
+  return $blocks;
+}
+
+/*
+ * implements hook_block_view().
+ */
+function movie_user_block_view($delta = '') {
+  // This example is adapted from node.module.
+  $block = array();
+
+  switch ($delta) {
+    case 'your_favourites':
+
+    $uid = movie_user_get_random_user();
+    $message = 'There are no favourites yet';
+
+    if ($uid){
+      $details = movie_user_get_user_details($uid);
+      $result = movie_user_film_details($details['film_nid']);
+
+      $user = user_load($uid);
+      $message = t('!user likes !films', array('!user' => $user->name, '!film' => $result['title']));
+
+    }
+
+    $block['subject'] = t('your favourites');
+    $block['content'][] = array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . $message . '</p>',
+    );
+
+    break;
+  }
+  return $block;
+}
+
+function movie_user_get_random_user() {
+
+  return db_select('movie_user', 'm')
+      ->fields('m', array('uid'))
+      ->range(0, 1)
+      ->orderRandom()
+      ->execute()
+      ->fetchField();
+}

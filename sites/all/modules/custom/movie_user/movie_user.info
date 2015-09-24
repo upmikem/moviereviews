@@ -1,0 +1,6 @@
+name = Movie User
+description = Alters the layout of the form for the user preferences
+core = 7.x
+package = "Top Ten Movies"
+
+dependencies[] = movie_import

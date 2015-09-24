@@ -1,0 +1,23 @@
+@import url(https://fonts.googleapis.com/css?family=Slabo+27px|Roboto+Condensed:400,400italic,300italic,300);
+/* line 10, ../sass/typography.scss */
+body {
+  font-family: "Open Sans", sans-serif;
+  font-weight: normal;
+  font-size: 0.85em;
+  color: #333;
+}
+
+/* line 18, ../sass/typography.scss */
+a {
+  color: #333;
+  text-decoration: none;
+}
+/* line 21, ../sass/typography.scss */
+a:hover {
+  text-decoration: underline;
+}
+
+/* line 28, ../sass/typography.scss */
+h1, h2 {
+  font-size: 1.5em;
+}
